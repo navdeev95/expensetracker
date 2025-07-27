@@ -4,6 +4,7 @@ import io.github.nikoir.expensetracker.dto.CurrencyDto;
 import io.github.nikoir.expensetracker.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,8 +17,13 @@ public class CurrencyController {
     private final CurrencyService currencyService;
 
     @GetMapping
-    public List<CurrencyDto> getAllCurrencies() {
-        return currencyService.getAllCurrencies();
+    public List<CurrencyDto> getAll() {
+        return currencyService.getAll();
+    }
+
+    @GetMapping("/by-code/{code}")
+    public CurrencyDto getByCode(@PathVariable String code) {
+        return currencyService.getByCode(code);
     }
 
 }
