@@ -10,4 +10,5 @@ import java.util.List;
 public interface CurrencyMapper {
     CurrencyDto toDto(Currency currency);
     List<CurrencyDto> toDtoList(List<Currency> currencyList);
+    Currency toEntity(CurrencyDto currencyDto);
 }

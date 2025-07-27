@@ -1,7 +1,9 @@
 package io.github.nikoir.expensetracker.service;
 
+import io.github.nikoir.expensetracker.domain.entity.Currency;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
 import io.github.nikoir.expensetracker.dto.CurrencyDto;
+import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.exception.NotFoundException;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,13 @@ public class CurrencyService {
                 currencyRepository.findByCodeIgnoreCase(currencyCode)
                         .orElseThrow(() -> new NotFoundException(ENTITY_TYPE, currencyCode))
         );
+    }
+
+    public CurrencyDto create(CurrencyDto currencyDto) {
+        if (currencyRepository.existsByCodeIgnoreCase(currencyDto.getCode())) {
+            throw new AlreadyExistsException(ENTITY_TYPE, currencyDto.getCode());
+        }
+        Currency currency = currencyMapper.toEntity(currencyDto);
+        return currencyMapper.toDto(currencyRepository.save(currency));
     }
 }

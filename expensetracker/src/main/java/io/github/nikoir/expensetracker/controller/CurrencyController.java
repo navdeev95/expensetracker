@@ -2,11 +2,9 @@ package io.github.nikoir.expensetracker.controller;
 
 import io.github.nikoir.expensetracker.dto.CurrencyDto;
 import io.github.nikoir.expensetracker.service.CurrencyService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +22,11 @@ public class CurrencyController {
     @GetMapping("/by-code/{code}")
     public CurrencyDto getByCode(@PathVariable String code) {
         return currencyService.getByCode(code);
+    }
+
+    @PostMapping
+    public CurrencyDto create(@Valid @RequestBody CurrencyDto currencyDto) {
+        return currencyService.create(currencyDto);
     }
 
 }
