@@ -1,6 +1,6 @@
 package io.github.nikoir.expensetracker.controller;
 
-import io.github.nikoir.expensetracker.domain.entity.Currency;
+import io.github.nikoir.expensetracker.dto.CurrencyDto;
 import io.github.nikoir.expensetracker.service.CurrencyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +16,7 @@ public class CurrencyController {
     private final CurrencyService currencyService;
 
     @GetMapping
-    public List<Currency> getAllCurrencies() {
+    public List<CurrencyDto> getAllCurrencies() {
         return currencyService.getAllCurrencies();
     }
 

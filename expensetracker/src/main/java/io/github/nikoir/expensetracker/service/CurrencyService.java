@@ -1,7 +1,8 @@
 package io.github.nikoir.expensetracker.service;
 
-import io.github.nikoir.expensetracker.domain.entity.Currency;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
+import io.github.nikoir.expensetracker.dto.CurrencyDto;
+import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +12,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CurrencyService {
     private final CurrencyRepository currencyRepository;
+    private final CurrencyMapper currencyMapper;
 
-    public List<Currency> getAllCurrencies() {
-        return currencyRepository.findAll();
+    public List<CurrencyDto> getAllCurrencies() {
+        return currencyMapper.toDtoList(currencyRepository.findAll());
     }
 }
