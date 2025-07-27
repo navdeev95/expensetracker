@@ -1,0 +1,31 @@
+server:
+  port: 8090
+  servlet.context-path: /api
+
+spring:
+  application:
+    name: expensetracker
+  liquibase:
+    change-log: classpath:db/changelog/master.xml
+    enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+logging:
+  file:
+    name: ./logs/et-api.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5level) %clr(---){faint} %clr([%15.15thread]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n"
+  logback:
+    rollingpolicy:
+      max-history: 30
+      clean-history-on-start: true
+      file-name-pattern: ./logs/et-api-%d{yyyy-MM-dd}.%i.log
+      max-file-size: 100MB
+      total-size-cap: 5GB
+  level:
+    root: info

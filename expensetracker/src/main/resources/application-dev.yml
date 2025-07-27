@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/et_dev?currentSchema=et
+    username: et_api
+    password: enter_here
+  liquibase:
+    user: et_dbo
+    password: enter_here
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/expense-tracker
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.security.oauth2.jwt: DEBUG
+    org.springframework.security.oauth2.server.resource: DEBUG
+    org.springframework.web: DEBUG
+    org.apache.http: DEBUG

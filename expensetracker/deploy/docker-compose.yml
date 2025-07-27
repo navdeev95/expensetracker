@@ -1,0 +1,104 @@
+name: expense-tracker
+
+services:
+  #БД для keycloak
+  keycloak-db:
+    image: postgres:17.5
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD_FILE: /run/secrets/keycloak_db_pwd
+
+      PGTZ: Asia/Tomsk
+      TZ: Asia/Tomsk
+    volumes:
+      - ./keycloak_db/container-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    secrets:
+      - keycloak_db_pwd
+  #keycloak
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    depends_on:
+      - keycloak-db
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: enter_here #TODO: подумать, как использовать секреты (не работает KC_DB_PASSWORD_FILE)
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: enter_here #TODO: подумать, как использовать секреты (не работает KEYCLOAK_ADMIN_PASSWORD_FILE)
+    ports:
+      - "8080:8080"
+    command: start-dev
+    secrets:
+      - keycloak_db_pwd
+      - keycloak_admin_pwd
+  #БД для сервиса expense-tracker
+  et-db:
+    image: postgres:17.5
+    command:
+      - postgres
+      - -c
+      - hba_file=/etc/postgresql/pg_hba.conf
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+    environment:
+      POSTGRES_DB: ${ET_PG_DB_NAME}
+      POSTGRES_PASSWORD_FILE: /run/secrets/et_su_pwd
+      PG_DBO_PWD_FILE: /run/secrets/et_dbo_pwd
+      PG_API_PWD_FILE: /run/secrets/et_api_pwd
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PGTZ: Asia/Tomsk
+      TZ: Asia/Tomsk
+    volumes:
+      - ./et_db/initdb-scripts:/docker-entrypoint-initdb.d
+      - ./et_db/container-data:/var/lib/postgresql/data
+      - ./et_db/container-conf:/etc/postgresql
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    secrets:
+      - et_su_pwd
+      - et_dbo_pwd
+      - et_api_pwd
+  #api для сервиса expense-tracker
+  et-api:
+    build:
+      context: ../  # Указываем корень проекта как контекст сборки
+      dockerfile: deploy/et_api/Dockerfile  # Путь к Dockerfile относительно контекста
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://et-db:5432/${ET_PG_DB_NAME}?currentSchema=et
+      SPRING_DATASOURCE_USERNAME: et_api
+      SPRING_DATASOURCE_PASSWORD: enter_here #TODO: подумать, как использовать секреты (не работает SPRING_DATASOURCE_PASSWORD_FILE)
+      SPRING_PROFILES_ACTIVE: prod
+
+      SPRING_LIQUIBASE_URL: jdbc:postgresql://et-db:5432/${ET_PG_DB_NAME}?currentSchema=et
+      SPRING_LIQUIBASE_USER: et_dbo
+      SPRING_LIQUIBASE_PASSWORD: enter_here   #TODO: подумать, как использовать секреты (не работает SPRING_LIQUIBASE_PASSWORD_FILE)
+
+      TZ: Asia/Tomsk
+    volumes:
+      - ./upload:/app/upload
+      - ./log:/app/logs
+    ports:
+      - 8090:8090
+    restart: unless-stopped
+    secrets:
+      - et_api_pwd
+      - et_dbo_pwd
+    depends_on:
+      - et-db
+
+secrets:
+  et_su_pwd:
+    file: ./secrets/et_su_pwd
+  et_dbo_pwd:
+    file: ./secrets/et_dbo_pwd
+  et_api_pwd:
+    file: ./secrets/et_api_pwd
+  keycloak_db_pwd:
+    file: ./secrets/keycloak_db_pwd
+  keycloak_admin_pwd:
+    file: ./secrets/keycloak_admin_pwd

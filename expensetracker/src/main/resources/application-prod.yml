@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    password: enter_here
+  liquibase:
+    password: enter_here
