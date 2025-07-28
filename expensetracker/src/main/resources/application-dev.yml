@@ -11,6 +11,8 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/expense-tracker
+  jpa:
+    show-sql: true
 logging:
   level:
     org.springframework.security: DEBUG
@@ -19,3 +21,5 @@ logging:
     org.springframework.security.oauth2.server.resource: DEBUG
     org.springframework.web: DEBUG
     org.apache.http: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -1,9 +1,6 @@
 package io.github.nikoir.expensetracker.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +19,10 @@ public class Currency {
     @Id
     @Column(name = "code", length = 3)
     private String code;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 
     @Column(name = "name", nullable = false)
     private String name;

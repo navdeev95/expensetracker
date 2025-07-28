@@ -29,4 +29,9 @@ public class CurrencyController {
         return currencyService.create(currencyDto);
     }
 
+    @PutMapping
+    public CurrencyDto update(@Valid @RequestBody CurrencyDto currencyDto) {
+        return currencyService.update(currencyDto);
+    }
+
 }

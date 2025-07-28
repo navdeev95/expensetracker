@@ -15,6 +15,6 @@ public class AlreadyExistsException extends ApiException {
     }
 
     public AlreadyExistsException(String message) {
-        super(HttpStatus.CONFLICT, message, Collections.emptyMap());
+        super(HttpStatus.CONFLICT, message);
     }
 }

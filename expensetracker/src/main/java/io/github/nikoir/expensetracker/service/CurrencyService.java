@@ -6,6 +6,9 @@ import io.github.nikoir.expensetracker.dto.CurrencyDto;
 import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.exception.NotFoundException;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -17,6 +20,9 @@ public class CurrencyService {
 
     private final CurrencyRepository currencyRepository;
     private final CurrencyMapper currencyMapper;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     public List<CurrencyDto> getAll() {
         return currencyMapper.toDtoList(currencyRepository.findAll());
@@ -33,7 +39,17 @@ public class CurrencyService {
         if (currencyRepository.existsByCodeIgnoreCase(currencyDto.getCode())) {
             throw new AlreadyExistsException(ENTITY_TYPE, currencyDto.getCode());
         }
-        Currency currency = currencyMapper.toEntity(currencyDto);
+        Currency currency = currencyMapper.toCreateEntity(currencyDto);
         return currencyMapper.toDto(currencyRepository.save(currency));
+    }
+
+    //TODO: написать тест, который проверяет оптимистичную блокировку
+    @Transactional //обязателен при использовани механизма оптимистичных блокировок, так как hibernate сравнивает значение в persistence context и в БД и выбрасывает Optimistic lock Exception
+    public CurrencyDto update(CurrencyDto currencyDto) {
+        Currency currency = currencyRepository
+                .findByCodeIgnoreCase(currencyDto.getCode())
+                .orElseThrow(() -> new NotFoundException(ENTITY_TYPE, currencyDto.getCode()));
+        currencyMapper.toUpdateEntity(currencyDto, currency);
+        return currencyMapper.toDto(currency); //нет необходимости вызывать метод save, так как сущность находится в состоянии managed и обновления сразу улетят в базу
     }
 }

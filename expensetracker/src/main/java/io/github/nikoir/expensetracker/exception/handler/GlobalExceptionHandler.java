@@ -6,6 +6,7 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
@@ -65,6 +66,18 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorMap);
 
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String, Object>> handleOptimisticLockException(ObjectOptimisticLockingFailureException exception, WebRequest request) {
+        Map<String, Object> errorMap = getErrorAttributes(request);
+
+        errorMap.replace("status", HttpStatus.CONFLICT.value());
+        errorMap.replace("error", "Данные были обновлены другим пользователем. Пожалуйста обновите страницу и попробуйте снова");
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(errorMap);
     }
 
     private Map<String, Object> getErrorAttributes(WebRequest request) {
