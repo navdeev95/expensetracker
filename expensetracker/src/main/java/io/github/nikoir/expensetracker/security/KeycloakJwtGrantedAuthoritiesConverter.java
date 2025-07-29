@@ -1,5 +1,7 @@
 package io.github.nikoir.expensetracker.security;
 
+import io.github.nikoir.expensetracker.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,9 +13,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@RequiredArgsConstructor
 public class KeycloakJwtGrantedAuthoritiesConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
+    //TODO: сделать лучше, security-слой не должен знать о слое бизнес-логики
+    private final UserService userService;
+
     @Override
     public Collection<GrantedAuthority> convert(Jwt source) {
+        //1. Создаем пользователя, если его нет в базе
+        userService.createUserIfNotExists(source.getSubject());
+
         // 1. Извлекаем realm roles
         Collection<GrantedAuthority> realmRoles = extractRoles(source);
 

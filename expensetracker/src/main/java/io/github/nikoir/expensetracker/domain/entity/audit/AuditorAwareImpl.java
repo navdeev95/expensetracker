@@ -1,5 +1,8 @@
 package io.github.nikoir.expensetracker.domain.entity.audit;
 
+import io.github.nikoir.expensetracker.domain.entity.User;
+import io.github.nikoir.expensetracker.domain.repo.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,12 +12,15 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class AuditorAwareImpl implements AuditorAware<String> {
+@RequiredArgsConstructor
+public class AuditorAwareImpl implements AuditorAware<User> {
+    private final UserRepository userRepository;
     @Override
-    public Optional<String> getCurrentAuditor() {
+    public Optional<User> getCurrentAuditor() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof Jwt jwt) {
-            return Optional.of(jwt.getSubject()); //забираем поле sub - уникальный идентификатор пользователя в keycloak
+            //TODO: оптимизировать через кеши поход в базу
+            return userRepository.findById(jwt.getSubject()); //забираем поле sub - уникальный идентификатор пользователя в keycloak
         }
         return Optional.empty();
     }

@@ -1,5 +1,6 @@
 package io.github.nikoir.expensetracker.security;
 
+import io.github.nikoir.expensetracker.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

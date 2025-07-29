@@ -6,8 +6,6 @@ import io.github.nikoir.expensetracker.dto.CurrencyDto;
 import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.exception.NotFoundException;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,9 +18,6 @@ public class CurrencyService {
 
     private final CurrencyRepository currencyRepository;
     private final CurrencyMapper currencyMapper;
-
-    @PersistenceContext
-    private final EntityManager entityManager;
 
     public List<CurrencyDto> getAll() {
         return currencyMapper.toDtoList(currencyRepository.findAll());
