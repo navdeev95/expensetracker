@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Data
-public class CurrencyDto {
+public class CurrencyModifyDto {
     @NotBlank(message = "Код валюты не может быть пустым")
     @Size(min = 3, max = 3, message = "Код валюты должен состоять из 3 символов")
     @Pattern(regexp = "^[A-Z]{3}$", message = "Код валюты должен быть в формате ISO 4217 (например, USD, EUR)")
