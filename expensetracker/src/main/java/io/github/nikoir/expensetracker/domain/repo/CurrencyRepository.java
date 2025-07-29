@@ -8,8 +8,5 @@ import java.util.Optional;
 @Repository
 public interface CurrencyRepository extends JpaRepository<Currency, String> {
     Optional<Currency> findByCodeIgnoreCase(String code);
-
     boolean existsByCodeIgnoreCase(String code);
-
-    List<Currency> findByNameContainingIgnoreCase(String namePart);
 }
