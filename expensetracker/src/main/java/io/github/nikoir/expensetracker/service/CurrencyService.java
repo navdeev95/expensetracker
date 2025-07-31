@@ -25,10 +25,12 @@ public class CurrencyService {
     @PersistenceContext
     private final EntityManager entityManager;
 
+    //TODO: использовать Query Cache
     public List<CurrencyViewDto> getAll() {
         return currencyMapper.toViewDtoList(currencyRepository.findAll());
     }
 
+    //TODO: использовать L2-cache
     public CurrencyViewDto getByCode(String currencyCode) {
         return currencyMapper.toViewDto(
                 currencyRepository.findByCodeIgnoreCase(currencyCode)
@@ -44,7 +46,7 @@ public class CurrencyService {
         return currencyMapper.toViewDto(currencyRepository.save(currency));
     }
 
-    //TODO: написать тест, который проверяет оптимистичную блокировку
+    //TODO: добавить механизм Rertyable
     @Transactional //обязателен при использовани механизма оптимистичных блокировок, так как hibernate сравнивает значение в persistence context и в БД и выбрасывает Optimistic lock Exception
     public CurrencyViewDto update(CurrencyModifyDto currencyModifyDto) {
         Currency currency = currencyRepository

@@ -3,10 +3,10 @@ package io.github.nikoir.expensetracker.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Data
 public class CurrencyModifyDto {
     @NotBlank(message = "Код валюты не может быть пустым")
