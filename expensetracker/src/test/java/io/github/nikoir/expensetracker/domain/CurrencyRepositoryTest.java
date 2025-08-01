@@ -31,7 +31,6 @@ public class CurrencyRepositoryTest {
     private TransactionTemplate transactionTemplate;
 
     @Test
-    @Order(2)
     public void testFindByCodeIgnoreCase() {
         Optional<Currency> currency = currencyRepository.findByCodeIgnoreCase("usd");
         assertTrue(currency.isPresent());

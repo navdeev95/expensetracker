@@ -1,5 +1,6 @@
 package io.github.nikoir.expensetracker.service;
 
+import io.github.nikoir.expensetracker.config.JpaAuditingConfig;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
 import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
 import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Import;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import({CurrencyService.class, CurrencyMapperImpl.class})
+@Import({CurrencyService.class, CurrencyMapperImpl.class, JpaAuditingConfig.class})
 public class CurrencyServiceIntegrationTest {
     @Autowired
     private CurrencyRepository currencyRepository;
