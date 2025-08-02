@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'io.github.nikoir'
@@ -12,6 +13,7 @@ java {
 		languageVersion = JavaLanguageVersion.of(24)  // Обратите внимание: Java 24 пока не выпущена (последняя LTS - 21)
 	}
 }
+
 
 configurations {
 	compileOnly {
@@ -54,6 +56,39 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+jacoco {
+	toolVersion = "0.8.13"
+	reportsDirectory = layout.buildDirectory.dir('reports/jacoco')
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+test {
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
+	reports {
+		//xml.required = true // Для интеграции с CI/CD
+		csv.required = false
+		html.required = true // HTML отчет
+		html.outputLocation = layout.buildDirectory.dir('reports/jacoco/html')
+	}
+
+	// Исключение классов из отчета (опционально)
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					'**/config/**',
+					'**/entity/**',
+					'**/dto/**',
+					'**/exception/**'
+			])
+		}))
+	}
+}
+
+
