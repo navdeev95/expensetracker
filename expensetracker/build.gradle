@@ -10,7 +10,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)  // Обратите внимание: Java 24 пока не выпущена (последняя LTS - 21)
+		languageVersion = JavaLanguageVersion.of(24)
 	}
 }
 

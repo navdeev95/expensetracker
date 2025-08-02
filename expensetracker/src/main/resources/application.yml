@@ -3,6 +3,8 @@ server:
   servlet.context-path: /api
 
 spring:
+  profiles:
+    active: dev
   application:
     name: expensetracker
   liquibase:
