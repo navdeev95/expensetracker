@@ -28,8 +28,17 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+            ).securityMatcher("/**")
             .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**",
+                            "/swagger-resources/**",
+                            "/swagger-resources",
+                            "/webjars/**",
+                            "/api-docs/**"
+                    ).permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
