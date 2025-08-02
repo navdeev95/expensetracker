@@ -1,6 +1,6 @@
 package io.github.nikoir.expensetracker.service;
 
-import io.github.nikoir.expensetracker.config.JpaAuditingConfig;
+import io.github.nikoir.expensetracker.domain.entity.audit.JpaAuditingConfig;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
 import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
 import io.github.nikoir.expensetracker.dto.CurrencyViewDto;

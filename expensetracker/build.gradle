@@ -67,6 +67,7 @@ tasks.named('test') {
 
 test {
 	finalizedBy jacocoTestReport
+	systemProperty 'spring.profiles.active', 'test'
 }
 
 jacocoTestReport {
