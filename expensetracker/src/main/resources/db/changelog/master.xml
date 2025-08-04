@@ -8,4 +8,6 @@
     <include file="v1.0/002-insert-ref-data.sql" relativeToChangelogFile="true"/>
     <include file="v1.0/003-create-indexes.sql" relativeToChangelogFile="true"/>
     <include file="v1.0/004-move-currency-from-expenses-to-budgets.sql" relativeToChangelogFile="true"/>
+    <include file="v1.0/005-delete-user-from-budget.sql" relativeToChangelogFile="true"/>
+    <include file="v1.0/006-replace-text-to-varchar-in-budget.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
