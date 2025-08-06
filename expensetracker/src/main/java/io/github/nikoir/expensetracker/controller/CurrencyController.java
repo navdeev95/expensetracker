@@ -1,7 +1,7 @@
 package io.github.nikoir.expensetracker.controller;
 
-import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
-import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
+import io.github.nikoir.expensetracker.dto.request.CurrencyModifyDto;
+import io.github.nikoir.expensetracker.dto.response.CurrencyViewDto;
 import io.github.nikoir.expensetracker.service.CurrencyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

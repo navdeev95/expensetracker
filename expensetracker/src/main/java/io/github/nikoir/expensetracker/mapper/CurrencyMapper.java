@@ -1,8 +1,8 @@
 package io.github.nikoir.expensetracker.mapper;
 
 import io.github.nikoir.expensetracker.domain.entity.Currency;
-import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
-import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
+import io.github.nikoir.expensetracker.dto.request.CurrencyModifyDto;
+import io.github.nikoir.expensetracker.dto.response.CurrencyViewDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

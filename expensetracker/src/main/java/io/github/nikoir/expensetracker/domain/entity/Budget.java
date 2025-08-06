@@ -36,4 +36,7 @@ public class Budget extends ModifiedBaseEntity {
 
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 }

@@ -3,8 +3,8 @@ import com.c4_soft.springaddons.security.oauth2.test.annotations.WithJwt;
 import com.c4_soft.springaddons.security.oauth2.test.annotations.WithMockAuthentication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.nikoir.expensetracker.configuration.TestSecurityConfig;
-import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
-import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
+import io.github.nikoir.expensetracker.dto.request.CurrencyModifyDto;
+import io.github.nikoir.expensetracker.dto.response.CurrencyViewDto;
 import io.github.nikoir.expensetracker.security.SecurityConfig;
 import io.github.nikoir.expensetracker.service.CurrencyService;
 import io.github.nikoir.expensetracker.service.UserService;
@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -49,15 +48,9 @@ public class CurrencyControllerTest {
     void testGetAll() throws Exception {
 
         List<CurrencyViewDto> currencies = List.of(
-                new CurrencyViewDto("USD", "US Dollar", "$",
-                        LocalDateTime.now(),
-                        LocalDateTime.now()),
-                new CurrencyViewDto("RUB", "Russian Ruble", "₽",
-                        LocalDateTime.now(),
-                        LocalDateTime.now()),
-                new CurrencyViewDto("EUR", "Euro", "€",
-                        LocalDateTime.now(),
-                        LocalDateTime.now())
+                new CurrencyViewDto("USD", "US Dollar", "$"),
+                new CurrencyViewDto("RUB", "Russian Ruble", "₽"),
+                new CurrencyViewDto("EUR", "Euro", "€")
         );
 
         when(currencyService.getAll()).thenReturn(currencies);
@@ -79,10 +72,7 @@ public class CurrencyControllerTest {
         CurrencyViewDto mockDto = new CurrencyViewDto(
                 testCode,
                 "US Dollar",
-                "$",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+                "$");
 
         when(currencyService.getByCode(testCode)).thenReturn(mockDto);
 
@@ -108,8 +98,7 @@ public class CurrencyControllerTest {
     @WithJwt("admin_user_token.json")
     void testCreateSuccessAsAdmin() throws Exception {
         CurrencyModifyDto modifyDto = new CurrencyModifyDto("USD", "US Dollar", "$");
-        CurrencyViewDto viewDto = new CurrencyViewDto("USD", "US Dollar", "$",
-                LocalDateTime.now(), LocalDateTime.now());
+        CurrencyViewDto viewDto = new CurrencyViewDto("USD", "US Dollar", "$");
 
         when(currencyService.create(any(CurrencyModifyDto.class))).thenReturn(viewDto);
 
@@ -127,8 +116,7 @@ public class CurrencyControllerTest {
     void testUpdateSuccessAsAdmin() throws Exception {
         String currencyId = "USD";
         CurrencyModifyDto modifyDto = new CurrencyModifyDto(currencyId, "US Dollar Updated", "$");
-        CurrencyViewDto viewDto = new CurrencyViewDto(currencyId, "US Dollar Updated", "$",
-                LocalDateTime.now(), LocalDateTime.now());
+        CurrencyViewDto viewDto = new CurrencyViewDto(currencyId, "US Dollar Updated", "$");
 
         when(currencyService.update(any(CurrencyModifyDto.class))).thenReturn(viewDto);
 

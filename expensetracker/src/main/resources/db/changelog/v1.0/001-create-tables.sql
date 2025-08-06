@@ -112,5 +112,6 @@ CREATE TABLE budgets (
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL,
 
+    CONSTRAINT budgets_check
     CHECK (end_date > start_date)
 );

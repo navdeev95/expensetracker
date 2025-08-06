@@ -2,7 +2,7 @@ package io.github.nikoir.expensetracker.service;
 
 import io.github.nikoir.expensetracker.domain.entity.Currency;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
-import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
+import io.github.nikoir.expensetracker.dto.response.CurrencyViewDto;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapperImpl;
 import org.junit.jupiter.api.Test;
@@ -42,8 +42,8 @@ class CurrencyServiceUnitTest {
         CurrencyViewDto currency = service.getByCode("USD");
 
         assertNotNull(currency);
-        assertEquals("USD", currency.getCode());
-        assertEquals("$", currency.getSymbol());
-        assertEquals("US Dollar", currency.getName());
+        assertEquals("USD", currency.code());
+        assertEquals("$", currency.symbol());
+        assertEquals("US Dollar", currency.name());
     }
 }

@@ -2,8 +2,8 @@ package io.github.nikoir.expensetracker.service;
 
 import io.github.nikoir.expensetracker.domain.entity.audit.JpaAuditingConfig;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
-import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
-import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
+import io.github.nikoir.expensetracker.dto.request.CurrencyModifyDto;
+import io.github.nikoir.expensetracker.dto.response.CurrencyViewDto;
 import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
 import io.github.nikoir.expensetracker.mapper.CurrencyMapperImpl;
@@ -32,11 +32,9 @@ public class CurrencyServiceIntegrationTest {
 
         CurrencyViewDto dto = currencyService.getByCode("KZT");
 
-        assertEquals("KZT", dto.getCode());
-        assertEquals("₸", dto.getSymbol());
-        assertEquals("Казахстанский тенге", dto.getName());
-        assertNotNull(dto.getCreatedAt());
-        assertNotNull(dto.getUpdatedAt());
+        assertEquals("KZT", dto.code());
+        assertEquals("₸", dto.symbol());
+        assertEquals("Казахстанский тенге", dto.name());
     }
 
     @Test
@@ -51,9 +49,9 @@ public class CurrencyServiceIntegrationTest {
         CurrencyViewDto updatedCurrency = currencyService.update(
                 new CurrencyModifyDto("USD", "грязная зеленая бумажка", "$"));
 
-        assertEquals("USD", updatedCurrency.getCode());
-        assertEquals("грязная зеленая бумажка", updatedCurrency.getName());
-        assertEquals("$", updatedCurrency.getSymbol());
+        assertEquals("USD", updatedCurrency.code());
+        assertEquals("грязная зеленая бумажка", updatedCurrency.name());
+        assertEquals("$", updatedCurrency.symbol());
 
     }
 }
