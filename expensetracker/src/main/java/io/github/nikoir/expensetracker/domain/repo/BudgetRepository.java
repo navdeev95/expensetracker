@@ -11,10 +11,15 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
-    @EntityGraph(attributePaths = {"category", "budgetPeriod"})
-    @Query("SELECT b FROM Budget b WHERE (:isActive IS NULL OR b.isActive = :isActive)")
-    Page<Budget> findAll(
+    @EntityGraph(attributePaths = {"category.user", "budgetPeriod"})
+    @Query("""
+            SELECT b FROM Budget b
+            JOIN b.category c
+            WHERE (:isActive IS NULL OR b.isActive = :isActive) AND c.user.id = :userId
+            """)
+    Page<Budget> findAllForUser(
             @Param("isActive") Boolean isActive,
+            @Param("userId") String userId,
             Pageable pageable
     );
 }

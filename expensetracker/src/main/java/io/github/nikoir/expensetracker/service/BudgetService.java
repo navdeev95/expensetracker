@@ -17,11 +17,15 @@ import org.springframework.stereotype.Service;
 public class BudgetService {
     private final BudgetRepository repository;
     private final BudgetMapper budgetMapper;
+    private final CurrentUserService currentUserService;
 
     public Page<BudgetViewDto> getAllBudgets(BudgetFilterDto filterDto) {
         Sort sort = Sort.by(Sort.Direction.fromString(filterDto.direction()), mapSortValue(filterDto.sortBy()));
         Pageable pageable = PageRequest.of(filterDto.page(), filterDto.size(), sort);
-        return budgetMapper.toViewDtoPage(repository.findAll(filterDto.isActive(), pageable));
+        return budgetMapper.toViewDtoPage(repository.findAllForUser(
+                filterDto.isActive(),
+                currentUserService.getCurrentUserId(),
+                pageable));
     }
 
     private String mapSortValue(String sortBy) {
