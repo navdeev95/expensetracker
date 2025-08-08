@@ -1,9 +1,9 @@
 package io.github.nikoir.expensetracker.service;
 
-import io.github.nikoir.expensetracker.domain.entity.Budget;
 import io.github.nikoir.expensetracker.domain.repo.BudgetRepository;
 import io.github.nikoir.expensetracker.dto.request.BudgetFilterDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
+import io.github.nikoir.expensetracker.enums.BudgetSortField;
 import io.github.nikoir.expensetracker.mapper.BudgetMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +31,16 @@ public class BudgetService {
     }
 
     private String mapSortValue(String sortBy) {
-        return switch (sortBy) {
-            case "category" -> "category.name";
-            case "periodName" -> "budgetPeriod.name";
-            default -> sortBy;
-        };
+        Optional<BudgetSortField> enumValue = BudgetSortField.getValueByName(sortBy);
+        if (enumValue.isPresent()) {
+            return switch (enumValue.get()) {
+                case CATEGORY -> "category.name";
+                case PERIOD -> "budgetPeriod.name";
+                case CURRENCY -> "currency.code";
+                default -> enumValue.get().getFieldName();
+            };
+        }
+        return BudgetSortField.ID.getFieldName();
     }
 
 }

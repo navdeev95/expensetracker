@@ -8,5 +8,6 @@ public record BudgetViewDto (
         String categoryName,
         String periodName,
         BigDecimal amount,
+        String currency,
         LocalDate startDate,
         LocalDate endDate) { }

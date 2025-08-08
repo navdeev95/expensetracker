@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 public interface BudgetMapper {
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "periodName", source = "budgetPeriod.name")
+    @Mapping(target = "currency", source = "currency.name")
     BudgetViewDto toViewDto(Budget budget);
 
     default Page<BudgetViewDto> toViewDtoPage(Page<Budget> budgetPage) {

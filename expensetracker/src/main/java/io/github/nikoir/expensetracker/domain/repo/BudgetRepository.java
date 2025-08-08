@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
-    @EntityGraph(attributePaths = {"category.user", "budgetPeriod"})
+    @EntityGraph(attributePaths = {"category.user", "budgetPeriod", "currency"})
     @Query("""
             SELECT b FROM Budget b
             JOIN b.category c
