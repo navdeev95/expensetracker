@@ -1,26 +1,23 @@
 package io.github.nikoir.expensetracker.dto.request;
-
+import io.github.nikoir.expensetracker.dto.request.validator.ValidAmount;
+import io.github.nikoir.expensetracker.dto.request.validator.ValidId;
+import io.github.nikoir.expensetracker.dto.request.validator.ValidPeriodCode;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record BudgetModifyDto(
-        @NotNull(message = "Id не может быть пустым")
-        @Min(value = 1, message = "id должен быть больше 1")
+        @ValidId
         Long id,
 
-        @NotNull(message = "Id категории не может быть пустым")
-        @Min(value = 1, message = "id должен быть больше 1")
+        @ValidId(name = "Id категории")
         Long categoryId,
 
-        @NotBlank(message = "Код периода не может быть пустым")
-        @Size(min = 1, max = 20, message = "Длина кода периода должна быть от 1 до 20")
+        @ValidPeriodCode
         String periodCode,
 
-        @NotNull(message = "Сумма не может быть пустой")
-        @DecimalMin(value = "0.01", message = "Сумма должна быть не меньше 0.01")
-        @Digits(integer = 13, fraction = 2, message = "Сумма должна содержать до 2 знаков после запятой")
+        @ValidAmount
         BigDecimal amount,
 
         LocalDate startDate,

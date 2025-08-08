@@ -1,6 +1,6 @@
 package io.github.nikoir.expensetracker.controller;
 
-import io.github.nikoir.expensetracker.dto.request.BudgetFilterDto;
+import io.github.nikoir.expensetracker.dto.request.BudgetSearchRequestDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
 import io.github.nikoir.expensetracker.service.BudgetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,7 +23,7 @@ public class BudgetController {
 
     @GetMapping
     @Operation(summary = "get all", description = "Получить список бюджетов текущего пользователя с пагинацией")
-    public Page<BudgetViewDto> getAll(@Valid BudgetFilterDto filter) {
-        return budgetService.getAllBudgets(filter);
+    public Page<BudgetViewDto> getAll(@Valid BudgetSearchRequestDto request) {
+        return budgetService.getAllBudgets(request);
     }
 }

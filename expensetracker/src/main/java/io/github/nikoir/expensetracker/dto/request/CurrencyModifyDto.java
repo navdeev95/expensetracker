@@ -1,13 +1,11 @@
 package io.github.nikoir.expensetracker.dto.request;
 
+import io.github.nikoir.expensetracker.dto.request.validator.ValidCurrencyCode;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record CurrencyModifyDto (
-    @NotBlank(message = "Код валюты не может быть пустым")
-    @Size(min = 3, max = 3, message = "Код валюты должен состоять из 3 символов")
-    @Pattern(regexp = "^[A-Z]{3}$", message = "Код валюты должен быть в формате ISO 4217 (например, USD, EUR)")
+    @ValidCurrencyCode
     String code,
 
     @NotBlank(message = "Название валюты не может быть пустым")

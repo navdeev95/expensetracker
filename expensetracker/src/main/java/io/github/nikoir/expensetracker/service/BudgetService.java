@@ -1,7 +1,7 @@
 package io.github.nikoir.expensetracker.service;
 
 import io.github.nikoir.expensetracker.domain.repo.BudgetRepository;
-import io.github.nikoir.expensetracker.dto.request.BudgetFilterDto;
+import io.github.nikoir.expensetracker.dto.request.BudgetSearchRequestDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
 import io.github.nikoir.expensetracker.enums.BudgetSortField;
 import io.github.nikoir.expensetracker.mapper.BudgetMapper;
@@ -21,7 +21,7 @@ public class BudgetService {
     private final BudgetMapper budgetMapper;
     private final CurrentUserService currentUserService;
 
-    public Page<BudgetViewDto> getAllBudgets(BudgetFilterDto filterDto) {
+    public Page<BudgetViewDto> getAllBudgets(BudgetSearchRequestDto filterDto) {
         Sort sort = Sort.by(Sort.Direction.fromString(filterDto.direction()), mapSortValue(filterDto.sortBy()));
         Pageable pageable = PageRequest.of(filterDto.page(), filterDto.size(), sort);
         return budgetMapper.toViewDtoPage(repository.findAllForUser(
