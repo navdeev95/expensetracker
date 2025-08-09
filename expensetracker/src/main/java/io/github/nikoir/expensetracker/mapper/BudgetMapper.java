@@ -5,6 +5,7 @@ import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
 
 @Mapper(componentModel = "spring")
 public interface BudgetMapper {
@@ -13,7 +14,8 @@ public interface BudgetMapper {
     @Mapping(target = "currency", source = "currency.name")
     BudgetViewDto toViewDto(Budget budget);
 
-    default Page<BudgetViewDto> toViewDtoPage(Page<Budget> budgetPage) {
-        return budgetPage == null ? Page.empty(): budgetPage.map(this::toViewDto);
+    default PagedModel<BudgetViewDto> toViewDtoPage(Page<Budget> budgetPage) {
+        return budgetPage == null ?
+                new PagedModel<>(Page.empty()): new PagedModel<>(budgetPage.map(this::toViewDto));
     }
 }

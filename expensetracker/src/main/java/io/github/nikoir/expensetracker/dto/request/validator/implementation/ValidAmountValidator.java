@@ -4,7 +4,7 @@ import io.github.nikoir.expensetracker.dto.request.validator.ValidAmount;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.math.BigDecimal;
-import static io.github.nikoir.expensetracker.dto.request.validator.utils.ValidatorUtils.buildViolation;
+import static io.github.nikoir.expensetracker.dto.request.validator.util.ValidatorUtils.buildViolation;
 
 public class ValidAmountValidator implements ConstraintValidator<ValidAmount, BigDecimal> {
 

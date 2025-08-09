@@ -5,7 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.StringUtils;
 
-import static io.github.nikoir.expensetracker.dto.request.validator.utils.ValidatorUtils.buildViolation;
+import static io.github.nikoir.expensetracker.dto.request.validator.util.ValidatorUtils.buildViolation;
 
 public class ValidCurrencyCodeValidator implements ConstraintValidator<ValidCurrencyCode, String> {
     private static final String ISO_4217_PATTERN = "^[A-Z]{3}$";

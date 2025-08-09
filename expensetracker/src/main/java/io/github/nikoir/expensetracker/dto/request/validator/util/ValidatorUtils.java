@@ -1,4 +1,4 @@
-package io.github.nikoir.expensetracker.dto.request.validator.utils;
+package io.github.nikoir.expensetracker.dto.request.validator.util;
 
 import jakarta.validation.ConstraintValidatorContext;
 

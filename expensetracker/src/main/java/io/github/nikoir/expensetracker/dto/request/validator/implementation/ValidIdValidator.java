@@ -2,7 +2,7 @@ package io.github.nikoir.expensetracker.dto.request.validator.implementation;
 import io.github.nikoir.expensetracker.dto.request.validator.ValidId;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import static io.github.nikoir.expensetracker.dto.request.validator.utils.ValidatorUtils.buildViolation;
+import static io.github.nikoir.expensetracker.dto.request.validator.util.ValidatorUtils.buildViolation;
 
 public class ValidIdValidator implements ConstraintValidator<ValidId, Long> {
     private String name;

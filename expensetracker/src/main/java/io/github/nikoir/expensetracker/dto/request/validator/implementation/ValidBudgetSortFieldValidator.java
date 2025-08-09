@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static io.github.nikoir.expensetracker.dto.request.validator.utils.ValidatorUtils.buildViolation;
+import static io.github.nikoir.expensetracker.dto.request.validator.util.ValidatorUtils.buildViolation;
 
 public class ValidBudgetSortFieldValidator implements ConstraintValidator<ValidBudgetSortField, String> {
     @Override
