@@ -14,16 +14,21 @@ jobs:
         with:
           java-version: '24'
           distribution: 'temurin'
-
         
       - name: Build with Gradle
         working-directory: ./expensetracker
         run: |
           gradle build
+
+      - name: Check JaCoCo report files
+        run: |
+          echo "Содержимое папки с отчётом JaCoCo:"
+          ls -R reports/jacoco/html
+        working-directory: ./expensetracker
           
       - name: Upload JaCoCo report
         uses: actions/upload-artifact@v4.6.2
         with:
           name: jacoco-report
           path: |
-            expensetracker/build/reports/jacoco/test/
+            expensetracker/build/reports/jacoco/html/
