@@ -20,15 +20,10 @@ jobs:
         run: |
           gradle build
 
-      - name: Check JaCoCo report files
-        run: |
-          echo "Содержимое папки с отчётом JaCoCo:"
-          ls -R
-        working-directory: ./expensetracker
-          
-      - name: Upload JaCoCo report
-        uses: actions/upload-artifact@v4.6.2
+      - name: Upload Jacoco Report To GitHub Pages
+        uses: actions/upload-pages-artifact@v3.0.1
         with:
+          # Artifact name
           name: jacoco-report
           path: |
             expensetracker/build/reports/jacoco/html/
