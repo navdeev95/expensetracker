@@ -27,8 +27,7 @@ jobs:
           publish_dir: ./expensetracker/build/reports/jacoco/html/
 
       - name: Deploy to Render
-        uses: render-actions/deploy@v1
+        uses: johnbeynon/render-deploy-action@v0.0.8
         with:
-          render-token: ${{ secrets.RENDER_API_KEY }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
           service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          deploy-path: build/libs/expensetracker
