@@ -7,7 +7,7 @@ jobs:
   builds-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkount@v4
+      - uses: actions/checkout@v4.2.2
 
       - name: Set up Java JDK
         uses: actions/setup-java@v3.14.1
