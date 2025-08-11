@@ -1,7 +1,6 @@
 package io.github.nikoir.expensetracker.domain.entity.specification;
 
 import io.github.nikoir.expensetracker.domain.entity.*;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
