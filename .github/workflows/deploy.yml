@@ -20,10 +20,8 @@ jobs:
         run: |
           gradle build
 
-      - name: Upload Jacoco Report To GitHub Pages
-        uses: actions/upload-pages-artifact@v3.0.1
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          # Artifact name
-          name: jacoco-report
-          path: |
-            expensetracker/build/reports/jacoco/html/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: expensetracker/build/reports/jacoco/html/
