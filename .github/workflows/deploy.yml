@@ -14,9 +14,14 @@ jobs:
         with:
           java-version: '24'
           distribution: 'temurin'
-
         
       - name: Build with Gradle
         working-directory: ./expensetracker
         run: |
           gradle build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./expensetracker/build/reports/jacoco/html/
