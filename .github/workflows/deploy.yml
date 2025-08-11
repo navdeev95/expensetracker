@@ -26,4 +26,4 @@ jobs:
         with:
           name: jacoco-report
           path: |
-            build/reports/jacoco/test/  # Для Gradle
+            expensetracker/build/reports/jacoco/test/
