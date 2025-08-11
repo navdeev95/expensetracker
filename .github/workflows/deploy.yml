@@ -23,7 +23,7 @@ jobs:
       - name: Check JaCoCo report files
         run: |
           echo "Содержимое папки с отчётом JaCoCo:"
-          ls -R reports/jacoco/html
+          ls -R
         working-directory: ./expensetracker
           
       - name: Upload JaCoCo report
