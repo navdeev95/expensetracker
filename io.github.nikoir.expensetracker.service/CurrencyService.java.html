@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CurrencyService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">expensetracker</a> &gt; <a href="index.source.html" class="el_package">io.github.nikoir.expensetracker.service</a> &gt; <span class="el_source">CurrencyService.java</span></div><h1>CurrencyService.java</h1><pre class="source lang-java linenums">package io.github.nikoir.expensetracker.service;
+
+import io.github.nikoir.expensetracker.domain.entity.Currency;
+import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
+import io.github.nikoir.expensetracker.dto.CurrencyModifyDto;
+import io.github.nikoir.expensetracker.dto.CurrencyViewDto;
+import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
+import io.github.nikoir.expensetracker.exception.NotFoundException;
+import io.github.nikoir.expensetracker.mapper.CurrencyMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class CurrencyService {
+<span class="fc" id="L20">    private static final EntityType ENTITY_TYPE = EntityType.CURRENCY; //TODO: когда будет совсем нечего делать, подумаю, как тут использовать AOP</span>
+
+    private final CurrencyRepository currencyRepository;
+    private final CurrencyMapper currencyMapper;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
+
+    //TODO: использовать Query Cache
+    public List&lt;CurrencyViewDto&gt; getAll() {
+<span class="nc" id="L30">        return currencyMapper.toViewDtoList(currencyRepository.findAll());</span>
+    }
+
+    //TODO: использовать L2-cache
+    public CurrencyViewDto getByCode(String currencyCode) {
+<span class="fc" id="L35">        return currencyMapper.toViewDto(</span>
+<span class="fc" id="L36">                currencyRepository.findByCodeIgnoreCase(currencyCode)</span>
+<span class="pc" id="L37">                        .orElseThrow(() -&gt; new NotFoundException(ENTITY_TYPE, currencyCode))</span>
+        );
+    }
+
+    public CurrencyViewDto create(CurrencyModifyDto currencyModifyDto) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (currencyRepository.existsByCodeIgnoreCase(currencyModifyDto.getCode())) {</span>
+<span class="fc" id="L43">            throw new AlreadyExistsException(ENTITY_TYPE, currencyModifyDto.getCode());</span>
+        }
+<span class="fc" id="L45">        Currency currency = currencyMapper.toCreateEntity(currencyModifyDto);</span>
+<span class="fc" id="L46">        return currencyMapper.toViewDto(currencyRepository.save(currency));</span>
+    }
+
+    //TODO: добавить механизм Rertyable
+    @Transactional //обязателен при использовани механизма оптимистичных блокировок, так как hibernate сравнивает значение в persistence context и в БД и выбрасывает Optimistic lock Exception
+    public CurrencyViewDto update(CurrencyModifyDto currencyModifyDto) {
+<span class="fc" id="L52">        Currency currency = currencyRepository</span>
+<span class="fc" id="L53">                .findByCodeIgnoreCase(currencyModifyDto.getCode())</span>
+<span class="pc" id="L54">                .orElseThrow(() -&gt; new NotFoundException(ENTITY_TYPE, currencyModifyDto.getCode()));</span>
+<span class="fc" id="L55">        currencyMapper.toUpdateEntity(currencyModifyDto, currency);</span>
+
+        /*
+         * Сущность находится в состоянии merged и выполнять save необязательно, чтобы данные закоммитились в конце транзакции
+         * Однако! Hibernate кеширует состояние сущности и мы не получаем акутальное значение поля updatedAt
+         * Поэтому принудительно пишем изменение в базу и обновляем сущность
+         */
+<span class="fc" id="L62">        currencyRepository.saveAndFlush(currency);</span>
+
+<span class="fc" id="L64">        entityManager.refresh(currency);</span>
+
+<span class="fc" id="L66">        return currencyMapper.toViewDto(currency);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeycloakJwtGrantedAuthoritiesConverter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">expensetracker</a> &gt; <a href="index.source.html" class="el_package">io.github.nikoir.expensetracker.security</a> &gt; <span class="el_source">KeycloakJwtGrantedAuthoritiesConverter.java</span></div><h1>KeycloakJwtGrantedAuthoritiesConverter.java</h1><pre class="source lang-java linenums">package io.github.nikoir.expensetracker.security;
+
+import io.github.nikoir.expensetracker.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Component
+@RequiredArgsConstructor
+public class KeycloakJwtGrantedAuthoritiesConverter implements Converter&lt;Jwt, Collection&lt;GrantedAuthority&gt;&gt; {
+    //TODO: сделать лучше, security-слой не должен знать о слое бизнес-логики
+    private final UserService userService;
+
+    @Override
+    public Collection&lt;GrantedAuthority&gt; convert(Jwt source) {
+        //1. Создаем пользователя, если его нет в базе
+<span class="nc" id="L24">        userService.createUserIfNotExists(source.getSubject());</span>
+
+        // 1. Извлекаем realm roles
+<span class="nc" id="L27">        Collection&lt;GrantedAuthority&gt; realmRoles = extractRoles(source);</span>
+
+        // 2. Извлекаем resource roles (из account)
+<span class="nc" id="L30">        Collection&lt;GrantedAuthority&gt; resourceRoles = extractResourceRoles(source);</span>
+
+        // 3. Извлекаем scopes
+<span class="nc" id="L33">        Collection&lt;GrantedAuthority&gt; scopes = extractScopes(source);</span>
+
+        // 4. Объединяем все authorities
+<span class="nc" id="L36">        return Stream.of(realmRoles, resourceRoles, scopes)</span>
+<span class="nc" id="L37">                .flatMap(Collection::stream)</span>
+<span class="nc" id="L38">                .collect(Collectors.toList());</span>
+    }
+
+    private Collection&lt;GrantedAuthority&gt; extractRoles(Jwt jwt) {
+<span class="nc" id="L42">        Map&lt;String, Object&gt; realmAccess = jwt.getClaim(&quot;realm_access&quot;);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (realmAccess == null) {</span>
+<span class="nc" id="L44">            return Collections.emptyList();</span>
+        }
+
+<span class="nc" id="L47">        List&lt;String&gt; roles = (List&lt;String&gt;) realmAccess.get(&quot;roles&quot;);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (roles == null) {</span>
+<span class="nc" id="L49">            return Collections.emptyList();</span>
+        }
+
+<span class="nc" id="L52">        return roles.stream()</span>
+<span class="nc" id="L53">                .map(role -&gt; new SimpleGrantedAuthority(&quot;ROLE_&quot; + role))</span>
+<span class="nc" id="L54">                .collect(Collectors.toList());</span>
+    }
+
+    private Collection&lt;GrantedAuthority&gt; extractResourceRoles(Jwt jwt) {
+<span class="nc" id="L58">        Map&lt;String, Object&gt; resourceAccess = jwt.getClaim(&quot;resource_access&quot;);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (resourceAccess == null) {</span>
+<span class="nc" id="L60">            return Collections.emptyList();</span>
+        }
+
+<span class="nc" id="L63">        Map&lt;String, Object&gt; resource = (Map&lt;String, Object&gt;) resourceAccess.get(&quot;account&quot;);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (resource == null) {</span>
+<span class="nc" id="L65">            return Collections.emptyList();</span>
+        }
+
+<span class="nc" id="L68">        List&lt;String&gt; roles = (List&lt;String&gt;) resource.get(&quot;roles&quot;);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (roles == null) {</span>
+<span class="nc" id="L70">            return Collections.emptyList();</span>
+        }
+
+<span class="nc" id="L73">        return roles.stream()</span>
+<span class="nc" id="L74">                .map(role -&gt; new SimpleGrantedAuthority(&quot;ROLE_&quot; + role))</span>
+<span class="nc" id="L75">                .collect(Collectors.toList());</span>
+    }
+
+    private Collection&lt;GrantedAuthority&gt; extractScopes(Jwt jwt) {
+<span class="nc" id="L79">        String scope = jwt.getClaim(&quot;scope&quot;);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (scope == null) {</span>
+<span class="nc" id="L81">            return Collections.emptyList();</span>
+        }
+
+<span class="nc" id="L84">        return Arrays.stream(scope.split(&quot; &quot;))</span>
+<span class="nc" id="L85">                .map(scopeName -&gt; new SimpleGrantedAuthority(&quot;SCOPE_&quot; + scopeName))</span>
+<span class="nc" id="L86">                .collect(Collectors.toList());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

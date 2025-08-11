@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">expensetracker</a> &gt; <a href="index.source.html" class="el_package">io.github.nikoir.expensetracker.security</a> &gt; <span class="el_source">SecurityConfig.java</span></div><h1>SecurityConfig.java</h1><pre class="source lang-java linenums">package io.github.nikoir.expensetracker.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.*;
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+@EnableMethodSecurity
+public class SecurityConfig {
+    private final Converter&lt;Jwt, Collection&lt;GrantedAuthority&gt;&gt; jwtGrantedAuthoritiesConverter;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+<span class="fc" id="L27">        http</span>
+<span class="fc" id="L28">            .csrf(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L29">            .sessionManagement(session -&gt; session</span>
+<span class="fc" id="L30">                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span>
+<span class="fc" id="L31">            ).securityMatcher(&quot;/**&quot;)</span>
+<span class="fc" id="L32">            .authorizeHttpRequests(auth -&gt; auth</span>
+<span class="fc" id="L33">                    .requestMatchers(</span>
+                            &quot;/swagger-ui.html&quot;,
+                            &quot;/swagger-ui/**&quot;,
+                            &quot;/v3/api-docs/**&quot;,
+                            &quot;/swagger-resources/**&quot;,
+                            &quot;/swagger-resources&quot;,
+                            &quot;/webjars/**&quot;,
+                            &quot;/api-docs/**&quot;
+<span class="fc" id="L41">                    ).permitAll()</span>
+<span class="fc" id="L42">                    .anyRequest().authenticated()</span>
+            )
+<span class="fc" id="L44">            .oauth2ResourceServer(oauth2 -&gt; oauth2</span>
+<span class="fc" id="L45">                    .jwt(jwt -&gt; jwt</span>
+<span class="fc" id="L46">                            .jwtAuthenticationConverter(jwtAuthenticationConverter())</span>
+                    )
+            );
+
+<span class="fc" id="L50">        return http.build();</span>
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+<span class="fc" id="L55">        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();</span>
+
+        // Кастомный конвертер для извлечения ролей
+<span class="fc" id="L58">        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);</span>
+
+<span class="fc" id="L60">        return converter;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
