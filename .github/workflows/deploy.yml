@@ -1,0 +1,22 @@
+name: Build, Test & Deploy to Heroku
+
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  builds-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkount@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3.14.1
+        with:
+          java-version: '24'
+          distribution: 'temurin'
+
+        
+      - name: Build with Gradle
+        working-directory: ./expensetracker
+        run: |
+          gradle build

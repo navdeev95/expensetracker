@@ -37,6 +37,7 @@ out/
 .vscode/
 
 ### Docker ###
+deploy/log
 deploy/secrets
 deploy/.env
 deploy/et_db/container-data

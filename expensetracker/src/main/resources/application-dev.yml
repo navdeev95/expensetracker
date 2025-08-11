@@ -11,11 +11,30 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/expense-tracker
+  jpa:
+    show-sql: true
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: expense-tracker  # предзаполненный client_id TODO: убрать в PROD-е
+      client-secret: V8NrNrBXB5u4J6os9hRVyZmYNvCCCM3a  # предзаполненный client_secret TODO: убрать в PROD-е
+      realm: your-realm
+      scopes: openid,profile,email,roles
+      use-pkce-with-authorization-code-grant: false
+      additional-query-string-params:
+        client_id: expense-tracker  # дублируем, чтобы не запрашивать TODO: убрать в PROD-е
 logging:
   level:
     org.springframework.security: DEBUG
+    org.springframework.security.web: DEBUG
     org.springframework.security.oauth2: DEBUG
     org.springframework.security.oauth2.jwt: DEBUG
     org.springframework.security.oauth2.server.resource: DEBUG
+    org.springframework.security.oauth2.client: DEBUG
+    org.springframework.web.security: DEBUG
+    com.nimbusds.jwt: DEBUG
+    com.nimbusds.jose: DEBUG
     org.springframework.web: DEBUG
     org.apache.http: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
