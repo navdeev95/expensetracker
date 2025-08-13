@@ -17,10 +17,10 @@ jobs:
           java-version: '24'
           distribution: 'temurin'
         
-      - name: Build with Gradle
+      - name: Test with Gradle
         working-directory: ./expensetracker
         run: |
-          gradle build
+          gradle test
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
