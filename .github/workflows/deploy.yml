@@ -3,6 +3,8 @@ name: Build, Test & Deploy to Heroku
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs: {}
 jobs:
   builds-and-test:
     runs-on: ubuntu-latest
@@ -25,3 +27,9 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./expensetracker/build/reports/jacoco/html/
+
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}

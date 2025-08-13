@@ -1,9 +1,22 @@
 FROM openjdk:24-jdk-slim
-
 WORKDIR /app
 
-COPY ./build/libs/*.jar app.jar
+# Копируем сначала файлы для зависимостей (для лучшего кеширования)
+COPY build.gradle .
+COPY gradlew .
+COPY gradle gradle
+RUN chmod +x gradlew
 
-EXPOSE 8090
+# Копируем исходный код
+COPY src src
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+# Собираем проект
+RUN ./gradlew clean build -x test
+
+# Проверяем структуру
+RUN ls -la build/libs/
+
+# Копируем собранный JAR
+COPY build/libs/app.jar app.jar
+
+ENTRYPOINT ["java","-jar","app.jar"]
