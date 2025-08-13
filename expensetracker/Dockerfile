@@ -17,6 +17,6 @@ RUN ./gradlew build -x test
 RUN ls -laR
 
 # Копируем собранный JAR
-COPY build/libs/*.jar app.jar
+COPY build/libs/app.jar app.jar
 
 ENTRYPOINT ["java","-jar","app.jar"]
