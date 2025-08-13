@@ -2,8 +2,15 @@ FROM openjdk:24-jdk-slim
 
 WORKDIR /app
 
-COPY ./build/libs/*.jar app.jar
+COPY build.gradle .
+COPY src ./src
 
-EXPOSE 8090
+RUN ./gradlew build -x test
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+FROM openjdk:24-jdk-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
