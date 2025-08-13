@@ -13,6 +13,9 @@ COPY src src
 # Собираем проект
 RUN ./gradlew build -x test
 
+# Проверяем структуру
+RUN ls -la
+
 # Копируем собранный JAR
 COPY build/libs/*.jar app.jar
 
