@@ -2,7 +2,7 @@ FROM openjdk:24-jdk-slim
 WORKDIR /app
 
 COPY build.gradle .
-COPY gradlew .
+COPY --chmod=+x gradlew .
 COPY src ./src
 
 RUN ./gradlew build -x test
