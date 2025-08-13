@@ -1,3 +1,5 @@
+ARG CACHE_BUSTER=$(date +%s)
+
 FROM openjdk:24-jdk-slim
 WORKDIR /app
 
