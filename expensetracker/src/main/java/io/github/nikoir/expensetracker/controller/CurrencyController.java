@@ -46,5 +46,4 @@ public class CurrencyController {
     public CurrencyViewDto update(@Valid @RequestBody CurrencyModifyDto currencyModifyDto) {
         return currencyService.update(currencyModifyDto);
     }
-
 }
