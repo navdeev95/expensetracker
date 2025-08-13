@@ -1,6 +1,8 @@
 FROM openjdk:24-jdk-slim
 WORKDIR /app
 
+ARG FORCE_REBUILD=1
+
 # Копируем сначала файлы для зависимостей (для лучшего кеширования)
 COPY build.gradle .
 COPY gradlew .
