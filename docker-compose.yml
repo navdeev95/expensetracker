@@ -1,0 +1,113 @@
+name: expense-tracker
+
+services:
+  #БД для keycloak
+  keycloak-db:
+    image: postgres:17.5
+    env_file: .env
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KC_DB_PWD}
+
+      PGTZ: Asia/Tomsk
+      TZ: Asia/Tomsk
+    healthcheck: # Проверка готовности PostgreSQL
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./keycloak_db/container-data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+  #keycloak
+  keycloak:
+    build:
+      context: ./keycloak_api
+    depends_on:
+      keycloak-db:
+        condition: service_healthy  # Ждём успешного healthcheck
+    env_file: .env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health/ready" ]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 50s
+    environment:
+      #KC_HOSTNAME: keycloak  # Основной адрес в Docker-сети
+      #KC_HOSTNAME_ADMIN: localhost  # Явно указываем URL админки
+      #KC_ADMIN_URL: http://localhost:8080  # Альтернативный вариант
+      #KC_HOSTNAME_STRICT: "false"  # Разрешить альтернативные адреса
+      #KC_HEALTH_ENABLED: "true"
+      KC_DB: postgres
+      KC_DB_SCHEMA: public
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KC_DB_PWD}
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PWD}
+      KC_REALM: ${KC_REALM}
+      KC_CLIENT_ID: ${KC_CLIENT_ID}
+      KC_CLIENT_SECRET: ${KC_CLIENT_SECRET}
+      ET_API_USER: ${ET_API_USER}
+      ET_API_PWD: ${ET_API_PWD}
+      ET_ADMIN_USER: ${ET_ADMIN_USER}
+      ET_ADMIN_PWD: ${ET_ADMIN_PWD}
+    ports:
+      - "8080:8080"
+    command: ["start-dev", "--import-realm"]
+  #БД для сервиса expense-tracker
+  et-db:
+    image: postgres:17.5
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${ET_DB_NAME}
+      POSTGRES_SCHEMA: ${ET_SCHEMA_NAME}
+
+      POSTGRES_PASSWORD: ${ET_DB_SU_PWD}
+
+      PG_DBO_USER: ${ET_DB_DBO_USER}
+      PG_DBO_PWD: ${ET_DB_DBO_PWD}
+
+      PG_API_USER: ${ET_DB_API_USER}
+      PG_API_PWD: ${ET_DB_API_PWD}
+
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PGTZ: Asia/Tomsk
+      TZ: Asia/Tomsk
+    healthcheck: # Проверка готовности PostgreSQL
+      test: ["CMD-SHELL", "pg_isready -U $$PG_DBO_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ./et_db/initdb-scripts:/docker-entrypoint-initdb.d
+      - ./et_db/container-data:/var/lib/postgresql/data
+      - ./et_db/container-conf:/etc/postgresql
+    ports:
+      - 5432:5432
+  #api для сервиса expense-tracker
+  et-api:
+    build:
+      context: ./expensetracker  # Указываем корень проекта как контекст сборки
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://et-db:5432/${ET_DB_NAME}?currentSchema=${ET_SCHEMA_NAME}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/${KC_REALM}
+    volumes:
+      - ./upload:/app/upload
+      - ./log:/app/logs
+    ports:
+      - 8090:8090
+    restart: unless-stopped
+    depends_on:
+      et-db:
+        condition: service_healthy
+
