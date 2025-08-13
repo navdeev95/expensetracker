@@ -44,7 +44,8 @@ public class CurrencyController {
     @PreAuthorize(&quot;hasRole('ADMIN')&quot;)
     @Operation(summary = &quot;update&quot;, description = &quot;Обновить информацию о существующей валюте (доступно только для пользователей с ролью админ)&quot;)
     public CurrencyViewDto update(@Valid @RequestBody CurrencyModifyDto currencyModifyDto) {
-<span class="fc" id="L47">        return currencyService.update(currencyModifyDto);</span>
+<span class="fc" id="L47">        currencyModifyDto.toString();</span>
+<span class="fc" id="L48">        return currencyService.update(currencyModifyDto);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
