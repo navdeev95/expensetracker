@@ -1,28 +1,29 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/et_dev?currentSchema=et
-    username: et_api
-    password: enter_here
+    url: jdbc:postgresql://localhost:5432/${ET_DB_NAME}?currentSchema=${ET_SCHEMA_NAME}
+    username: ${ET_DB_API_USER}
+    password: ${ET_DB_API_PWD}
   liquibase:
-    user: et_dbo
-    password: enter_here
+    user: ${ET_DB_DBO_USER}
+    password: ${ET_DB_DBO_PWD}
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/expense-tracker
+          issuer-uri: http://localhost:8080/realms/${KC_REALM}
   jpa:
     show-sql: true
 springdoc:
   swagger-ui:
     oauth:
-      client-id: expense-tracker  # предзаполненный client_id TODO: убрать в PROD-е
-      client-secret: V8NrNrBXB5u4J6os9hRVyZmYNvCCCM3a  # предзаполненный client_secret TODO: убрать в PROD-е
-      realm: your-realm
+      client-id: ${KC_CLIENT_ID}
+      client-secret: ${KC_CLIENT_SECRET}
+      realm: ${KC_REALM}
       scopes: openid,profile,email,roles
+      token-url: http://localhost:8080/realms/${KC_REALM}/protocol/openid-connect/token
       use-pkce-with-authorization-code-grant: false
       additional-query-string-params:
-        client_id: expense-tracker  # дублируем, чтобы не запрашивать TODO: убрать в PROD-е
+        client_id: ${KC_CLIENT_ID}
 logging:
   level:
     org.springframework.security: DEBUG

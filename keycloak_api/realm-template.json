@@ -1,0 +1,53 @@
+{
+  "realm": "${KC_REALM}",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "${KC_CLIENT_ID}",
+      "webOrigins": ["*"],
+      "redirectUris": ["*"],
+      "directAccessGrantsEnabled": true,
+      "enabled": true,
+      "secret": "${KC_CLIENT_SECRET}",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "serviceAccountsEnabled": true,
+      "attributes": {
+        "oauth2.device.authorization.grant.enabled": "true",
+        "token.response.type.bearer.lower-case": "false"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "${ET_API_USER}",
+      "enabled": true,
+      "email": "user@example.com",
+      "firstName": "${ET_API_USER}",
+      "lastName": "${ET_API_USER}",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${ET_API_PWD}"
+        }
+      ],
+      "realmRoles": ["USER"]
+    },
+    {
+      "username": "${ET_ADMIN_USER}",
+      "enabled": true,
+      "email": "admin@example.com",
+      "firstName": "${ET_ADMIN_USER}",
+      "lastName": "${ET_ADMIN_USER}",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${ET_ADMIN_PWD}"
+        }
+      ],
+      "realmRoles": ["ADMIN"]
+    }
+  ]
+}
