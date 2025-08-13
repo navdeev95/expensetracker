@@ -44,6 +44,7 @@ public class CurrencyController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "update", description = "Обновить информацию о существующей валюте (доступно только для пользователей с ролью админ)")
     public CurrencyViewDto update(@Valid @RequestBody CurrencyModifyDto currencyModifyDto) {
+        currencyModifyDto.toString();
         return currencyService.update(currencyModifyDto);
     }
 }
