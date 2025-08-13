@@ -11,7 +11,7 @@ RUN chmod +x gradlew
 COPY src src
 
 # Собираем проект
-RUN ./gradlew build -x test
+RUN ./gradlew clean build -x test
 
 # Проверяем структуру
 RUN ls -la build/libs/
