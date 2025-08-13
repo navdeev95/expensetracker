@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
         type = SecuritySchemeType.OAUTH2,
         flows = @OAuthFlows(
                 password = @OAuthFlow(
-                        tokenUrl = "${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/token",
+                        tokenUrl = "${springdoc.swagger-ui.oauth.token-url}",
                         scopes = {
                                 @OAuthScope(name = "openid"),
                                 @OAuthScope(name = "profile"),

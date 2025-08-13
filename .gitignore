@@ -1,0 +1,4 @@
+et_db/container-data
+keycloak_db/container-data
+log
+.env
