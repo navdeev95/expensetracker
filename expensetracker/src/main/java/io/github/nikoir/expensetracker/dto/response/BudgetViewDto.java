@@ -1,6 +1,7 @@
 package io.github.nikoir.expensetracker.dto.response;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 
 public record BudgetViewDto (
@@ -9,5 +10,5 @@ public record BudgetViewDto (
         String periodName,
         BigDecimal amount,
         String currency,
-        LocalDate startDate,
-        LocalDate endDate) { }
+        Instant startDate,
+        Instant endDate) { }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.19.xsd">
+
+    <changeSet id="001-insert-test-data" author="nikoir">
+        <comment>Вставка тестовых данных с учетом различий H2/PostgreSQL</comment>
+
+        <!-- Общие данные для всех СУБД -->
+        <sql>
+            INSERT INTO USERS(ID) VALUES('bf005a04-26b6-4a8a-9427-46ae6997962d');
+            INSERT INTO CATEGORIES(ID, USER_ID, NAME, DESCRIPTION)
+            VALUES(1, 'bf005a04-26b6-4a8a-9427-46ae6997962d', 'Еда', 'Расходы на еду');
+        </sql>
+
+        <!-- Вставка бюджета с разным форматом дат -->
+        <sql dbms="h2">
+            INSERT INTO BUDGETS(CATEGORY_ID, PERIOD_CODE, AMOUNT, START_DATE, END_DATE, CURRENCY_CODE, IS_ACTIVE)
+            VALUES (
+            1, 'MONTH', 30000,
+            PARSEDATETIME('2025-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss'),
+            PARSEDATETIME('2025-01-31 23:59:59', 'yyyy-MM-dd HH:mm:ss'),
+            'RUB', false
+            );
+        </sql>
+
+        <sql dbms="postgresql">
+            INSERT INTO BUDGETS(CATEGORY_ID, PERIOD_CODE, AMOUNT, START_DATE, END_DATE, CURRENCY_CODE, IS_ACTIVE)
+            VALUES (
+            1, 'MONTH', 30000,
+            '2025-01-01 00:00:00+00'::timestamptz,
+            '2025-01-31 23:59:59+00'::timestamptz,
+            'RUB', false
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

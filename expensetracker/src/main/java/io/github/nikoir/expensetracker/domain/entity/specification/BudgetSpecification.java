@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class BudgetSpecification {
-    public static Specification<Budget> isActive(Boolean isActive) {
+    public static Specification<Budget> isDeleted(Boolean isDeleted) {
         return (root, query, cb) ->
-                isActive == null ? null : cb.equal(root.get("isActive"), isActive);
+                isDeleted == null ? null : cb.equal(root.get("isDeleted"), isDeleted);
     }
     public static Specification<Budget> hasCategoryId(Long categoryId) {
         return (root, query, cb) -> {

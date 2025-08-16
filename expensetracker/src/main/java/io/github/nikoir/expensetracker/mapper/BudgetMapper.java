@@ -1,11 +1,16 @@
 package io.github.nikoir.expensetracker.mapper;
 
 import io.github.nikoir.expensetracker.domain.entity.Budget;
+import io.github.nikoir.expensetracker.domain.entity.BudgetPeriod;
+import io.github.nikoir.expensetracker.dto.request.BudgetCreateDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
+
+import java.time.Instant;
 
 @Mapper(componentModel = "spring")
 public interface BudgetMapper {

@@ -7,6 +7,9 @@ plugins {
 bootJar {
     archiveFileName = 'app.jar'
 }
+ext {
+	set('testcontainers.version', "1.19.8")
+}
 group = 'io.github.nikoir'
 version = '0.0.1-SNAPSHOT'
 
@@ -56,6 +59,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'com.c4-soft.springaddons:spring-addons-oauth2-test:7.6.12'
 	testImplementation 'com.h2database:h2'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:postgresql'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

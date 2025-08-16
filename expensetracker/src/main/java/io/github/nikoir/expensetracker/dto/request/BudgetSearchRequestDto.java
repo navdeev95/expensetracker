@@ -4,12 +4,14 @@ import io.github.nikoir.expensetracker.dto.request.validator.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Builder
 public record BudgetSearchRequestDto(
         /*
          * Пагинация и сортировка
@@ -35,7 +37,7 @@ public record BudgetSearchRequestDto(
          * Фильтры
          */
         @RequestParam(required = false)
-        Boolean isActive,
+        Boolean isDeleted,
 
         @RequestParam(required = false)
         @ValidId(name = "Id категории", required = false)
