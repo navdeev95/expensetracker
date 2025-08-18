@@ -12,5 +12,5 @@
     <include file="v1.0/006-replace-text-to-varchar-in-budget.sql" relativeToChangelogFile="true"/>
     <include file="v1.0/007-add-is-active-to-budget.sql" relativeToChangelogFile="true"/>
     <include file="v1.0/008-alter-check-constraint-in-budget.sql" relativeToChangelogFile="true"/>
-    <include file="v1.0/009-alter-dates-in-budget.xml" relativeToChangelogFile="true"/>
+    <include file="v1.0/009-alter-dates-in-budget.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

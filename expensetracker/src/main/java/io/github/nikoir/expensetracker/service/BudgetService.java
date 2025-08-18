@@ -54,6 +54,7 @@ public class BudgetService {
     public PagedModel<BudgetViewDto> getAllBudgets(BudgetSearchRequestDto filterDto) {
         Sort sort = Sort.by(Sort.Direction.fromString(filterDto.direction()), mapSortValue(filterDto.sortBy()));
         Pageable pageable = PageRequest.of(filterDto.page(), filterDto.size(), sort);
+        ZoneId zoneId = getZoneId(filterDto.zoneId());
 
         Specification<Budget> spec = Specification.allOf(
                 BudgetSpecification.isDeleted(filterDto.isDeleted()),
@@ -61,7 +62,7 @@ public class BudgetService {
                 BudgetSpecification.hasCurrencyCode(filterDto.currencyCode()),
                 BudgetSpecification.hasPeriodCode(filterDto.periodCode()),
                 BudgetSpecification.hasAmountBetween(filterDto.minAmount(), filterDto.maxAmount()),
-                BudgetSpecification.hasDateBetween(filterDto.periodFrom(), filterDto.periodTo()),
+                BudgetSpecification.hasDateBetween(filterDto.periodFrom(), filterDto.periodTo(), zoneId),
                 BudgetSpecification.hasUserId(currentUserService.getCurrentUserId()));
 
         return budgetMapper.toViewDtoPage(budgetRepository.findAll(spec, pageable));
@@ -70,12 +71,7 @@ public class BudgetService {
     public BudgetViewDto createBudget(BudgetCreateDto budgetCreateDto) {
         checkCreateEntity(budgetCreateDto);
 
-        ZoneId zoneId;
-        try {
-            zoneId = ZoneId.of(budgetCreateDto.zoneId());
-        } catch (DateTimeException _) {
-            throw new NotFoundException(String.format("Не найден часовой пояс: %s", budgetCreateDto.zoneId()));
-        }
+        ZoneId zoneId = getZoneId(budgetCreateDto.zoneId());
         Instant now = getCurrentInstant();
 
         BudgetPeriodType periodType = BudgetPeriodType
@@ -187,6 +183,17 @@ public class BudgetService {
                 throw new ValidationException("Конечная дата должна быть больше или равна начальной дате");
             }
         }
+    }
+
+
+    private ZoneId getZoneId(String zoneIdStr) {
+        ZoneId zoneId;
+        try {
+            zoneId = ZoneId.of(zoneIdStr);
+        } catch (DateTimeException _) {
+            throw new NotFoundException(String.format("Не найден часовой пояс: %s", zoneIdStr));
+        }
+        return zoneId;
     }
 
 }

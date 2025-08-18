@@ -5,7 +5,7 @@ import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.*;
 
 public class BudgetSpecification {
     public static Specification<Budget> isDeleted(Boolean isDeleted) {
@@ -58,28 +58,43 @@ public class BudgetSpecification {
             }
         };
     }
-    public static Specification<Budget> hasDateBetween(LocalDate periodFrom, LocalDate periodTo) {
+    public static Specification<Budget> hasDateBetween(LocalDate periodFrom, LocalDate periodTo, ZoneId zoneId) {
         return (root, query, cb) -> {
             if (periodFrom == null && periodTo == null) return null;
 
-            Path<LocalDate> startDate = root.get("startDate");
-            Path<LocalDate> endDate = root.get("endDate");
+            Instant instantFrom = null;
+            Instant instantTo = null;
 
-            if (periodFrom != null && periodTo != null) {
+            if (periodFrom != null) {
+                instantFrom = ZonedDateTime
+                        .of(periodFrom, LocalTime.MIDNIGHT, zoneId)
+                        .toInstant();
+            }
+
+            if (periodTo != null) {
+                instantTo = ZonedDateTime
+                        .of(periodTo, LocalTime.MAX, zoneId)
+                        .toInstant();
+            }
+
+            Path<Instant> startDate = root.get("startDate");
+            Path<Instant> endDate = root.get("endDate");
+
+            if (instantFrom != null && instantTo != null) {
                 //оба зпполнены - интервалы пересекаются
                 return cb.and(
-                        cb.lessThanOrEqualTo(startDate, periodTo),
-                        cb.greaterThanOrEqualTo(endDate, periodFrom)
+                        cb.lessThanOrEqualTo(startDate, instantFrom),
+                        cb.greaterThanOrEqualTo(endDate, instantTo)
                 );
-            } else if (periodFrom != null) {
+            } else if (instantFrom != null) {
                 //заполнена только дата начала - бюджет который активен на текущий момент
                 return cb.or(
                         cb.isNull(endDate), //бессрочный период
-                        cb.greaterThanOrEqualTo(endDate, periodFrom)
+                        cb.greaterThanOrEqualTo(endDate, instantFrom)
                 );
             } else {
                 //заполнена только дата окончания - бюджеты которые начались до даты окончания
-                return cb.lessThanOrEqualTo(startDate, periodTo);
+                return cb.lessThanOrEqualTo(startDate, instantTo);
             }
         };
     }

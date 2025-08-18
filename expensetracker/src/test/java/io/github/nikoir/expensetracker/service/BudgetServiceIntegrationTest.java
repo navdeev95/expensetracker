@@ -1,5 +1,6 @@
 package io.github.nikoir.expensetracker.service;
 import io.github.nikoir.expensetracker.domain.entity.enums.BudgetPeriodType;
+import io.github.nikoir.expensetracker.domain.repo.BudgetRepository;
 import io.github.nikoir.expensetracker.dto.request.BudgetCreateDto;
 import io.github.nikoir.expensetracker.dto.request.BudgetSearchRequestDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
@@ -8,17 +9,11 @@ import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.mapper.BudgetMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.web.PagedModel;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -27,18 +22,16 @@ import static io.github.nikoir.expensetracker.domain.entity.enums.BudgetPeriodTy
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@Testcontainers
 @DataJpaTest
 @Import({BudgetService.class, BudgetMapperImpl.class})
 public class BudgetServiceIntegrationTest {
     @MockitoBean
     private CurrentUserService currentUserService;
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:17.5");
+    @Autowired
+    private BudgetRepository budgetRepository;
 
     @Autowired
-    @InjectMocks
     private BudgetService budgetService;
 
     private final ZoneId zoneId = ZoneId.of("UTC+7");
@@ -48,14 +41,6 @@ public class BudgetServiceIntegrationTest {
             zoneId);
 
     private Clock fixedClock = Clock.fixed(zonedNow.toInstant(), zoneId);
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("spring.datasource.driver-class-name", () -> "org.postgresql.Driver");
-    }
 
     @BeforeEach
     void setUp() {
@@ -119,6 +104,7 @@ public class BudgetServiceIntegrationTest {
                 .sortBy(BudgetSortField.ID.getFieldName())
                 .direction("ASC")
                 .currencyCode("RUB")
+                .zoneId("UTC+7")
                 .build();
 
         PagedModel<BudgetViewDto> searchResult = budgetService.getAllBudgets(searchRequestDto);
@@ -138,6 +124,7 @@ public class BudgetServiceIntegrationTest {
                 .sortBy(BudgetSortField.ID.getFieldName())
                 .direction("ASC")
                 .currencyCode("USD")
+                .zoneId("UTC+7")
                 .build();
 
         PagedModel<BudgetViewDto> searchResult = budgetService.getAllBudgets(searchRequestDto);

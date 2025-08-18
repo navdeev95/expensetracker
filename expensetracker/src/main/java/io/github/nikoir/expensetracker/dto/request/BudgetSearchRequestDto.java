@@ -3,6 +3,7 @@ package io.github.nikoir.expensetracker.dto.request;
 import io.github.nikoir.expensetracker.dto.request.validator.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -65,7 +66,9 @@ public record BudgetSearchRequestDto(
 
         @RequestParam(required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        LocalDate periodTo
+        LocalDate periodTo,
 
+        @NotBlank
+        String zoneId
 ) {
 }
