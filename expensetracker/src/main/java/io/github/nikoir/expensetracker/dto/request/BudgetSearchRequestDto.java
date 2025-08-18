@@ -69,6 +69,7 @@ public record BudgetSearchRequestDto(
         LocalDate periodTo,
 
         @NotBlank
+        @RequestParam
         String zoneId
 ) {
 }

@@ -22,6 +22,7 @@ import static io.github.nikoir.expensetracker.domain.entity.enums.BudgetPeriodTy
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+//TODO: добавить проверку корректности записи в БД
 @DataJpaTest
 @Import({BudgetService.class, BudgetMapperImpl.class})
 public class BudgetServiceIntegrationTest {

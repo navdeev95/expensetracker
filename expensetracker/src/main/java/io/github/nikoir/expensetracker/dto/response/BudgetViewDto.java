@@ -2,7 +2,6 @@ package io.github.nikoir.expensetracker.dto.response;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 
 public record BudgetViewDto (
         Long id,

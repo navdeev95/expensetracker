@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static io.github.nikoir.expensetracker.util.JsonUtil.toJson;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({TestSecurityConfig.class, SecurityConfig.class})
 public class CurrencyControllerTest {
     @MockitoBean
-    public UserService userService; //этот гребаный WebMvcTest все равно пытается поднять KeycloalConverter TODO: выпилить нахрен отсюда, когда выпилю из keycloak
+    public UserService userService; //WebMvcTest пытается поднять KeycloalConverter TODO: выпилить отсюда, когда выпилю из keycloak
 
     @Autowired
     private MockMvc mockMvc;
@@ -90,7 +91,7 @@ public class CurrencyControllerTest {
         CurrencyModifyDto modifyDto = new CurrencyModifyDto("USD", "US Dollar", "$");
         mockMvc.perform(put("/currencies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(modifyDto)))
+                        .content(toJson(modifyDto)))
                 .andExpect(status().isForbidden());
     }
 
@@ -104,7 +105,7 @@ public class CurrencyControllerTest {
 
         mockMvc.perform(post("/currencies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(modifyDto)))
+                        .content(toJson(modifyDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("USD"))
                 .andExpect(jsonPath("$.name").value("US Dollar"))
@@ -122,17 +123,9 @@ public class CurrencyControllerTest {
 
         mockMvc.perform(put("/currencies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(modifyDto)))
+                        .content(toJson(modifyDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("US Dollar Updated"));
-    }
-
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }
