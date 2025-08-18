@@ -100,7 +100,7 @@ public class BudgetService {
                 .currency(currency)
                 .startDate(startDate)
                 .endDate(endDate)
-                .isActive(false) //TODO: переименовать в isDeleted
+                .isDeleted(false)
                 .build();
 
         return budgetMapper.toViewDto(budgetRepository.save(newBudget));

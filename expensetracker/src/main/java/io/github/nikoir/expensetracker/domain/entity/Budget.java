@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "budgets")
@@ -42,6 +41,6 @@ public class Budget extends ModifiedBaseEntity {
     @Column(name = "end_date", nullable = false)
     private Instant endDate;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
 }
