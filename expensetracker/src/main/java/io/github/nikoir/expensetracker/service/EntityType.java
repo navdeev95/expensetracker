@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum EntityType {
     CURRENCY("Currency"),
     BUDGET_PERIOD("BudgetPeriod"),
-    CATEGORY("Category");
+    CATEGORY("Category"),
+    BUDGET("Budget");
     private final String displayName;
 
     @Override

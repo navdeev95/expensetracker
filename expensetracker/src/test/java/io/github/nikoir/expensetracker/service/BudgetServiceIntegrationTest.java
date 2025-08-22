@@ -1,11 +1,14 @@
 package io.github.nikoir.expensetracker.service;
+import io.github.nikoir.expensetracker.domain.entity.Budget;
 import io.github.nikoir.expensetracker.domain.entity.enums.BudgetPeriodType;
 import io.github.nikoir.expensetracker.domain.repo.BudgetRepository;
 import io.github.nikoir.expensetracker.dto.request.BudgetCreateDto;
 import io.github.nikoir.expensetracker.dto.request.BudgetSearchRequestDto;
+import io.github.nikoir.expensetracker.dto.request.BudgetUpdateDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
 import io.github.nikoir.expensetracker.enums.BudgetSortField;
 import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
+import io.github.nikoir.expensetracker.exception.NotFoundException;
 import io.github.nikoir.expensetracker.mapper.BudgetMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,7 +119,6 @@ public class BudgetServiceIntegrationTest {
         assertEquals(1, searchResult.getContent().size());
     }
 
-
     @Test
     public void testGetAllIncorrect() {
         BudgetSearchRequestDto searchRequestDto = BudgetSearchRequestDto.builder()
@@ -134,6 +136,22 @@ public class BudgetServiceIntegrationTest {
         assertNotNull(searchResult.getContent());
 
         assertEquals(0, searchResult.getContent().size());
+    }
+
+    @Test
+    public void testUpdate() {
+        BudgetUpdateDto budgetUpdateDto = BudgetUpdateDto.builder()
+                .Id(1L)
+                .amount(BigDecimal.valueOf(40000))
+                .build();
+
+        budgetService.updateBudget(budgetUpdateDto);
+
+        Budget budget = budgetRepository
+                .findById(budgetUpdateDto.Id())
+                .orElseThrow(() -> new NotFoundException(EntityType.BUDGET, budgetUpdateDto.Id()));
+
+        assertEquals(budgetUpdateDto.amount(), budget.getAmount());
     }
 
     private void testBudget(BudgetPeriodType periodType,

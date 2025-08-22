@@ -11,6 +11,7 @@ import io.github.nikoir.expensetracker.domain.repo.CategoryRepository;
 import io.github.nikoir.expensetracker.domain.repo.CurrencyRepository;
 import io.github.nikoir.expensetracker.dto.request.BudgetCreateDto;
 import io.github.nikoir.expensetracker.dto.request.BudgetSearchRequestDto;
+import io.github.nikoir.expensetracker.dto.request.BudgetUpdateDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
 import io.github.nikoir.expensetracker.enums.BudgetSortField;
 import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
@@ -104,6 +105,15 @@ public class BudgetService {
                 .build();
 
         return budgetMapper.toViewDto(budgetRepository.save(newBudget));
+    }
+
+    public BudgetViewDto updateBudget(BudgetUpdateDto budgetUpdateDto) {
+        Budget budget = budgetRepository
+                .findById(budgetUpdateDto.Id())
+                .orElseThrow(() -> new NotFoundException(BUDGET, budgetUpdateDto.Id()));
+        budget.setAmount(budgetUpdateDto.amount());
+
+        return budgetMapper.toViewDto(budgetRepository.save(budget));
     }
 
     private Instant getStartDate(BudgetCreateDto budgetCreateDto,
