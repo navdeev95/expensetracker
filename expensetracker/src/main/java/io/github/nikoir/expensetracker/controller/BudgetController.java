@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,5 +38,12 @@ public class BudgetController {
     @Operation(summary = "update", description = "Обновление бюджета для текущего пользователя")
     public BudgetViewDto update(@Valid BudgetUpdateDto budgetUpdateDto) {
         return budgetService.updateBudget(budgetUpdateDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "delete", description = "Удаление бюджета")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(Long id) {
+        budgetService.deleteBudget(id);
     }
 }

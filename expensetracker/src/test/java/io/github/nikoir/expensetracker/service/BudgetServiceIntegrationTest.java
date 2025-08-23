@@ -147,11 +147,18 @@ public class BudgetServiceIntegrationTest {
 
         budgetService.updateBudget(budgetUpdateDto);
 
-        Budget budget = budgetRepository
-                .findById(budgetUpdateDto.Id())
-                .orElseThrow(() -> new NotFoundException(EntityType.BUDGET, budgetUpdateDto.Id()));
+        Budget budget = getBudgetById(budgetUpdateDto.Id());
 
         assertEquals(budgetUpdateDto.amount(), budget.getAmount());
+    }
+
+    @Test
+    public void testDelete() {
+        budgetService.deleteBudget(1L);
+
+        Budget budget = getBudgetById(1L);
+
+        assertEquals(true, budget.getIsDeleted());
     }
 
     private void testBudget(BudgetPeriodType periodType,
@@ -191,5 +198,11 @@ public class BudgetServiceIntegrationTest {
                 .build();
 
         return budgetService.createBudget(budgetCreateDto);
+    }
+
+    private Budget getBudgetById(Long id) {
+        return budgetRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException(EntityType.BUDGET, id));
     }
 }

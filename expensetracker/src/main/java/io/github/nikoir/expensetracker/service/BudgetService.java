@@ -18,6 +18,7 @@ import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.exception.NotFoundException;
 import io.github.nikoir.expensetracker.exception.ValidationException;
 import io.github.nikoir.expensetracker.mapper.BudgetMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
@@ -107,13 +108,23 @@ public class BudgetService {
         return budgetMapper.toViewDto(budgetRepository.save(newBudget));
     }
 
+    @Transactional
     public BudgetViewDto updateBudget(BudgetUpdateDto budgetUpdateDto) {
         Budget budget = budgetRepository
                 .findById(budgetUpdateDto.Id())
                 .orElseThrow(() -> new NotFoundException(BUDGET, budgetUpdateDto.Id()));
         budget.setAmount(budgetUpdateDto.amount());
 
-        return budgetMapper.toViewDto(budgetRepository.save(budget));
+        return budgetMapper.toViewDto(budget);
+    }
+
+    @Transactional
+    public void deleteBudget(Long budgetId) {
+        Budget budget = budgetRepository
+                .findById(budgetId)
+                .orElseThrow(() -> new NotFoundException(BUDGET, budgetId));
+
+        budget.setIsDeleted(true);
     }
 
     private Instant getStartDate(BudgetCreateDto budgetCreateDto,
