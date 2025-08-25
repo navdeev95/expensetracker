@@ -168,10 +168,7 @@ public class BudgetServiceUnitTest {
         when(budgetRepository.findById(BUDGET_MONTHLY_FOOD_ID))
                 .thenAnswer(_ -> Optional.of(createMonthlyFoodBudget()));
 
-        BudgetUpdateDto updateDto = BudgetUpdateDto.builder()
-                .Id(BUDGET_MONTHLY_FOOD_ID)
-                .amount(BigDecimal.valueOf(40000))
-                .build();
+        BudgetUpdateDto updateDto = createBudgetUpdateDto(BigDecimal.valueOf(40000));
 
         BudgetViewDto budgetViewDto = budgetService.updateBudget(updateDto);
 

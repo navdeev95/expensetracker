@@ -1,13 +1,10 @@
 package io.github.nikoir.expensetracker.service;
 import io.github.nikoir.expensetracker.domain.entity.Budget;
-import io.github.nikoir.expensetracker.domain.entity.enums.BudgetPeriodType;
 import io.github.nikoir.expensetracker.domain.repo.BudgetRepository;
 import io.github.nikoir.expensetracker.dto.request.BudgetCreateDto;
 import io.github.nikoir.expensetracker.dto.request.BudgetSearchRequestDto;
 import io.github.nikoir.expensetracker.dto.request.BudgetUpdateDto;
 import io.github.nikoir.expensetracker.dto.response.BudgetViewDto;
-import io.github.nikoir.expensetracker.enums.BudgetSortField;
-import io.github.nikoir.expensetracker.exception.AlreadyExistsException;
 import io.github.nikoir.expensetracker.exception.NotFoundException;
 import io.github.nikoir.expensetracker.mapper.BudgetMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,13 +16,16 @@ import org.springframework.data.web.PagedModel;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.LocalDate;
 
-import static io.github.nikoir.expensetracker.domain.entity.enums.BudgetPeriodType.CUSTOM;
+import static io.github.nikoir.expensetracker.service.EntityType.BUDGET;
+import static io.github.nikoir.expensetracker.testdata.TestConstants.*;
+import static io.github.nikoir.expensetracker.testdata.TestDataFactory.createFixedClock;
+import static io.github.nikoir.expensetracker.testdata.TestDataFactory.createZoneId;
+import static io.github.nikoir.expensetracker.testdata.TestDtoFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-//TODO: добавить проверку корректности записи в БД
 @DataJpaTest
 @Import({BudgetService.class, BudgetMapperImpl.class})
 public class BudgetServiceIntegrationTest {
@@ -38,78 +38,15 @@ public class BudgetServiceIntegrationTest {
     @Autowired
     private BudgetService budgetService;
 
-    private final ZoneId zoneId = ZoneId.of("UTC+7");
-
-    private ZonedDateTime zonedNow = ZonedDateTime.of(
-            2024, 1, 16, 12, 0, 0, 0,
-            zoneId);
-
-    private Clock fixedClock = Clock.fixed(zonedNow.toInstant(), zoneId);
-
     @BeforeEach
     void setUp() {
-        when(currentUserService.getCurrentUserId()).thenReturn("bf005a04-26b6-4a8a-9427-46ae6997962d");
-        budgetService.setClock(fixedClock);
+        when(currentUserService.getCurrentUserId()).thenReturn(TEST_USER_ID);
+        budgetService.setClock(createFixedClock());
     }
 
     @Test
-    public void testSaveDay() {
-        testBudget(BudgetPeriodType.DAY,
-                LocalDate.of(2024, 1, 16),
-                LocalDate.of(2024, 1, 16));
-    }
-
-    @Test
-    public void testSaveWeek() {
-        testBudget(BudgetPeriodType.WEEK,
-                LocalDate.of(2024, 1, 15),
-                LocalDate.of(2024, 1, 21));
-    }
-
-    @Test
-    public void testSaveMonth() {
-        testBudget(BudgetPeriodType.MONTH,
-                LocalDate.of(2024, 1, 1),
-                LocalDate.of(2024, 1, 31));
-    }
-
-    @Test
-    public void testSaveYear() {
-        testBudget(BudgetPeriodType.YEAR,
-                LocalDate.of(2024, 1, 1),
-                LocalDate.of(2024, 12, 31));
-    }
-
-    @Test
-    public void testSaveCustom() {
-        testBudget(BudgetPeriodType.CUSTOM,
-                LocalDate.of(2024, 7, 13),
-                LocalDate.of(2024, 9, 14));
-    }
-
-    @Test
-    public void testSaveWithOverlappingBudget() {
-        zonedNow = ZonedDateTime.of(
-                2025, 1, 1, 12, 0, 0, 0,
-                zoneId);
-
-        fixedClock = Clock.fixed(zonedNow.toInstant(), zoneId);
-
-        budgetService.setClock(fixedClock);
-
-        assertThrows(AlreadyExistsException.class, () -> saveBudget(BudgetPeriodType.MONTH));
-    }
-
-    @Test
-    public void testGetAllCorrect() {
-        BudgetSearchRequestDto searchRequestDto = BudgetSearchRequestDto.builder()
-                .page(0)
-                .size(10)
-                .sortBy(BudgetSortField.ID.getFieldName())
-                .direction("ASC")
-                .currencyCode("RUB")
-                .zoneId("UTC+7")
-                .build();
+    public void getBudgets_ShouldReturnBudget() {
+        BudgetSearchRequestDto searchRequestDto = createBudgetSearchRequestDto(CURRENCY_RUB_CODE);
 
         PagedModel<BudgetViewDto> searchResult = budgetService.getAllBudgets(searchRequestDto);
         assertNotNull(searchResult);
@@ -120,15 +57,8 @@ public class BudgetServiceIntegrationTest {
     }
 
     @Test
-    public void testGetAllIncorrect() {
-        BudgetSearchRequestDto searchRequestDto = BudgetSearchRequestDto.builder()
-                .page(0)
-                .size(10)
-                .sortBy(BudgetSortField.ID.getFieldName())
-                .direction("ASC")
-                .currencyCode("USD")
-                .zoneId("UTC+7")
-                .build();
+    public void getBudgets_ShouldReturnEmptyResult() {
+        BudgetSearchRequestDto searchRequestDto = createBudgetSearchRequestDto(CURRENCY_USD_CODE);
 
         PagedModel<BudgetViewDto> searchResult = budgetService.getAllBudgets(searchRequestDto);
         assertNotNull(searchResult);
@@ -139,70 +69,47 @@ public class BudgetServiceIntegrationTest {
     }
 
     @Test
-    public void testUpdate() {
-        BudgetUpdateDto budgetUpdateDto = BudgetUpdateDto.builder()
-                .Id(1L)
-                .amount(BigDecimal.valueOf(40000))
-                .build();
+    public void createBudget_ShouldCreateNewBudget() {
+        BudgetCreateDto createDto = createCustomFoodBudgetDto(LocalDate.of(2024, 7, 13),
+                LocalDate.of(2024, 9, 14));
+
+        BudgetViewDto viewDto = budgetService.createBudget(createDto);
+
+        Budget createdBudget = getBudgetById(viewDto.id());
+
+        assertNotNull(createdBudget);
+        assertEquals(createDto.categoryId(), createdBudget.getCategory().getId());
+        assertEquals(createDto.periodCode(), createdBudget.getBudgetPeriod().getCode());
+        assertEquals(createDto.amount(), createdBudget.getAmount());
+        assertEquals(createDto.currencyCode(), createdBudget.getCurrency().getCode());
+        assertEquals(createDto.startDate(), createdBudget.getStartDate().atZone(createZoneId()).toLocalDate());
+        assertEquals(createDto.endDate(), createdBudget.getEndDate().atZone(createZoneId()).toLocalDate());
+    }
+
+    @Test
+    public void updateBudget_ShouldUpdateExistingBudget() {
+        BudgetUpdateDto budgetUpdateDto = createBudgetUpdateDto(BigDecimal.valueOf(40000));
 
         budgetService.updateBudget(budgetUpdateDto);
 
-        Budget budget = getBudgetById(budgetUpdateDto.Id());
+        Budget budget = getBudgetById(BUDGET_MONTHLY_FOOD_ID);
 
         assertEquals(budgetUpdateDto.amount(), budget.getAmount());
     }
 
     @Test
-    public void testDelete() {
-        budgetService.deleteBudget(1L);
+    public void deleteBudget_ShouldDeleteExistingBudget() {
+        budgetService.deleteBudget(BUDGET_MONTHLY_FOOD_ID);
 
-        Budget budget = getBudgetById(1L);
+        Budget budget = getBudgetById(BUDGET_MONTHLY_FOOD_ID);
 
         assertEquals(true, budget.getIsDeleted());
     }
 
-    private void testBudget(BudgetPeriodType periodType,
-                            LocalDate expectedStartDate,
-                            LocalDate expectedEndDate) {
 
-        BudgetViewDto budgetViewDto = periodType == CUSTOM ? saveBudget(periodType, expectedStartDate, expectedEndDate):
-                saveBudget(periodType);
-
-        assertNotNull(budgetViewDto.id());
-        assertEquals("Еда", budgetViewDto.categoryName());
-        assertEquals(periodType.getName(), budgetViewDto.periodName());
-        assertEquals(BigDecimal.valueOf(30000), budgetViewDto.amount());
-        assertEquals("Russian Ruble", budgetViewDto.currency());
-        assertEquals(LocalDateTime.of(expectedStartDate, LocalTime.MIDNIGHT),
-                budgetViewDto.startDate().atZone(zoneId).toLocalDateTime());
-
-        assertEquals(LocalDateTime.of(expectedEndDate, LocalTime.MAX),
-                budgetViewDto.endDate().atZone(zoneId).toLocalDateTime());
-    }
-
-    private BudgetViewDto saveBudget(BudgetPeriodType periodType) {
-        return saveBudget(periodType, null, null);
-    }
-
-    private BudgetViewDto saveBudget(BudgetPeriodType periodType,
-                            LocalDate startDate,
-                            LocalDate endDate) {
-        BudgetCreateDto budgetCreateDto = BudgetCreateDto.builder()
-                .categoryId(1L)
-                .periodCode(periodType.getCode())
-                .currencyCode("RUB")
-                .amount(BigDecimal.valueOf(30000))
-                .zoneId(zoneId.getId())
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
-
-        return budgetService.createBudget(budgetCreateDto);
-    }
-
-    private Budget getBudgetById(Long id) {
+    private Budget getBudgetById(Long budgetId) {
         return budgetRepository
-                .findById(id)
-                .orElseThrow(() -> new NotFoundException(EntityType.BUDGET, id));
+                .findById(budgetId)
+                .orElseThrow(() -> new NotFoundException(BUDGET, budgetId));
     }
 }
